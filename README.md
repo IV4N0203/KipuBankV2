@@ -80,7 +80,7 @@ El código final se encuentra en la carpeta `/src/KipuBankV2.sol`.
 2.  **Versión del Compilador:** Solidity `^0.8.26`.
 3.  **Argumentos del Constructor:** Se requieren dos argumentos para la inicialización:
     * `priceFeedAddress (address)`: La dirección del Data Feed ETH/USD en Sepolia.
-        * *Valor de Ejemplo (Sepolia):* `0x694AA1769357215Ef4bE215cd2aa0325eEba1cda`
+        * *Valor de Ejemplo (Sepolia):* `0x694AA1769357215DE4FAC081bf1f309aDC325306`
     * `maxWithdrawalAmount (uint256)`: El límite máximo de retiro por transacción, expresado en Wei.
         * *Valor de Ejemplo (1 ETH):* `1000000000000000000`
 
