@@ -1,9 +1,7 @@
-# KipuBankV2
-Contrato KipuBankV2 - IVAN ALARCON 
+# KipuBankV2 - Banco Multi-Token con Límite en USD - IVAN ALARCON
 
 Contrato desplegado: https://sepolia.etherscan.io/address/0x922c4a61F3755417D3536c5262a691bbAEc5a831#code
 
-# KipuBankV2 - Banco Multi-Token con Límite en USD
 
 ![Solidity](https://img.shields.io/badge/Solidity-0.8.26-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
