@@ -71,8 +71,11 @@ Contrato KipuBankV2 - IVAN ALARCON
    npm install @openzeppelin/contracts @chainlink/contracts
 
 📥 Despliegue
+
 1. Configurar el contrato
+
 Modifica el constructor en KipuBankV2.sol con los parámetros deseados:
+
 constructor(
     address priceFeedAddress,  // Ej: 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419 (Chainlink ETH/USD en Sepolia)
     uint256 maxWithdrawalAmount  // Ej: 1000 * 10**18 (1000 ETH como límite por retiro)
@@ -110,3 +113,23 @@ await bank.addSupportedToken(
   "0x16a9FA2068be2025EC67a98EE896C5f959C4728D", // Chainlink USDC/USD
   6                                       // Decimales de USDC
 );
+
+Pausar el contrato (en emergencias):
+
+await bank.pause();
+
+2. Usuarios: Depositar Fondos
+Depositar ETH:
+
+await bank.deposit({ value: hre.ethers.utils.parseEther("1.0") });
+
+Depositar ERC-20 (ej: USDC):
+
+const usdc = await hre.ethers.getContractAt("IERC20", "0x6f14......");
+await usdc.approve(bank.address, hre.ethers.utils.parseUnits("100", 6)); // Aprobar 100 USDC
+await bank.depositToken(usdc.address, hre.ethers.utils.parseUnits("100", 6));
+
+3. Usuarios: Retirar Fondos
+Retirar ETH:
+
+await bank.withdraw(hre.ethers.utils.parseEther("0.5"));
