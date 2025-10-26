@@ -242,4 +242,4 @@ SafeERC20: Por qué usarlo https://blog.openzeppelin.com/uncaught-exceptions-in-
 
 📜 Licencia
 
-Este proyecto está bajo la licencia MIT. Véase LICENSE para más detalles.
+Este proyecto está bajo la licencia MIT. 
