@@ -97,80 +97,149 @@ Todas las interacciones se realizan a través de la interfaz de Remix o Ethersca
 
 ---
 ⚖️ Decisiones de Diseño y Trade-offs
+
 1. Uso de address(0) para ETH
+
 Decisión: Representar ETH como address(0) en el mapeo balances.
+
 Ventajas:
+
 Evita duplicar lógica para ETH y ERC-20.
+
 Simplifica el código al tratar ETH como un "token especial".
+
 Trade-offs:
+
 Requiere validaciones adicionales para evitar confusiones (ej: require(tokenAddress != address(0), "Use deposit() for ETH")).
+
 2. Límite Global en USD (BANK_CAP_USD)
+
 Decisión: Validar el límite de capacidad en USD (no en ETH o tokens).
+
 Ventajas:
+
 Permite un control más preciso del riesgo (ej: 1M USD independientemente del token).
+
 Se adapta a la volatilidad de los activos (1 ETH = $2000 hoy, pero podría valer $3000 mañana).
+
 Trade-offs:
+
 Dependencia de oráculos: Si el oráculo de Chainlink falla, el contrato podría bloquearse.
+
 Costo de gas: Cada depósito requiere una llamada a getEthPriceInUsd().
+
 Mitigación:
+
 Usar un oráculo descentralizado y confiable (ej: Chainlink).
+
 Implementar un circuit breaker para pausar el contrato si el oráculo falla.
+
 3. Patrón CEI (Checks-Effects-Interactions)
+
 Decisión: Seguir estrictamente el patrón CEI en todas las funciones.
+
 Ventajas:
+
 Previene reentrada: Al actualizar el estado antes de llamadas externas.
+
 Claridad: Código más legible y predecible.
+
 Trade-offs:
+
 En algunos casos, puede requerir más líneas de código (ej: cachear valores antes de modificarlos).
 
 4. Uso de SafeERC20
+
 Decisión: Usar SafeERC20 para todas las transferencias de tokens.
+
 Ventajas:
+
 Compatibilidad: Funciona con tokens que no retornan bool en transfer (ej: USDT).
+
 Seguridad: Evita pérdidas de fondos por transferencias fallidas.
+
 Trade-offs:
+
 Gas adicional: safeTransfer consume un poco más de gas que transfer.
+
 Justificación:
+
 El costo adicional es mínimo comparado con el riesgo de perder fondos.
+
 5. Roles Granulares
+
 Decisión: Separar roles (CAP_MANAGER_ROLE, TOKEN_MANAGER_ROLE, PAUSE_MANAGER_ROLE).
+
 Ventajas:
+
 Principio de mínimo privilegio: Cada rol tiene permisos específicos.
+
 Flexibilidad: Permite asignar responsabilidades a diferentes equipos (ej: un equipo gestiona tokens, otro gestiona límites).
+
 Trade-offs:
+
 Complejidad: Más roles = más gestión de permisos.
+
 Recomendación:
+
 En producción, asignar roles a multisigs o contratos de timelock (no a EOAs).
+
 6. unchecked para Optimización de Gas
+
 Decisión: Usar unchecked en operaciones aritméticas después de validaciones.
+
 Ventajas:
+
 Reducción de gas: Evita checks de overflow/underflow cuando no son necesarios.
+
 Trade-offs:
+
 Riesgo de bugs: Si las validaciones son incorrectas, podría haber overflows.
+
 Regla aplicada:
+
 Solo se usa unchecked después de verificar que no habrá overflow (ej: require(a + b > a, "Overflow")).
+
 🚨 Advertencias de Seguridad
+
 No usar en producción:
 
 Este contrato es educativo y no ha sido auditado. Contiene riesgos como:
+
 Dependencia de un solo oráculo (Chainlink).
+
 Falta de protección contra front-running en operaciones críticas.
+
 Posible centralización si los roles se asignan a una sola EOA.
+
 Riesgos conocidos:
 
 Oracle manipulation: Un atacante podría manipular el precio de ETH/USD para burlar BANK_CAP_USD.
+
 Reentrada en tokens ERC-777: SafeERC20 no protege contra tokens ERC-777 maliciosos. Usar nonReentrant en funciones críticas.
+
 Pérdida de fondos: Si el oráculo falla, el contrato podría quedar inutilizable.
+
 Recomendaciones para producción:
 
 Usar un oráculo descentralizado (ej: Chainlink + fallback).
+
 Implementar límite de tiempo para pausas (evitar pausas indefinidas).
+
 Añadir función de rescate (emergencyWithdraw) para casos extremos.
+
 Auditar el contrato con herramientas como Slither, MythX o CertiK.
+
 📚 Recursos Adicionales
-Documentación de OpenZeppelin
-Chainlink Price Feeds
-Patrón CEI (Checks-Effects-Interactions)
-SafeERC20: Por qué usarlo
+
+Documentación de OpenZeppelin https://docs.openzeppelin.com/contracts/4.x/
+
+Chainlink Price Feeds https://docs.chain.link/data-feeds
+
+Patrón CEI (Checks-Effects-Interactions) https://soliditydeveloper.com/cei
+
+SafeERC20: Por qué usarlo https://blog.openzeppelin.com/uncaught-exceptions-in-solidity/
+
 📜 Licencia
+
 Este proyecto está bajo la licencia MIT. Véase LICENSE para más detalles.
